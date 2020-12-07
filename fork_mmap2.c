@@ -5,6 +5,7 @@
 #include<string.h>
 #include<sys/wait.h>
 #include<sys/mman.h>
+//匿名映射区
 
 int var = 100;
 
