@@ -7,6 +7,8 @@
 #include<errno.h>
 #include<pthread.h>
 
+//FIFO实现非血缘关系进程间通信 读端
+
 void sys_err(const char *str)
 {
    perror(str);
