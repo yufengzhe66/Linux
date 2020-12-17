@@ -31,6 +31,12 @@ int main()
 {
   pid_t pid;
  
+  sigset_t set;
+  sigemptyset(&set);
+  sigaddset(&set, SIGCHLD);
+  sigprocmask(SIG_BLOCK, &set, NULL);
+
+
   int i;
   for(i = 0; i < 15; i++ )
     {
@@ -46,6 +52,8 @@ int main()
        act.sa_flags = 0;
        
        sigaction(SIGCHLD, &act, NULL);
+
+       sigprocmask(SIG_UNBLOCK, &set, NULL);
 
        printf("I'm parent, pid == %d\n",getpid());
        while(1);
