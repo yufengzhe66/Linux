@@ -59,7 +59,7 @@ void *consumer(void *arg)
   
   mp = head;
   head = head -> next;
-  printf("----------------consumer %d \n", mp -> num);
+  printf("----------------consumer:%d   %d \n",pthread_self(), mp -> num);
   free(mp);
   pthread_mutex_unlock(&mutex);
   sleep(rand() % 3);
