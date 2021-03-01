@@ -32,6 +32,7 @@ int main()
    
    int ret, i;
 
+   struct sigaction act;
    // memset(&srv_addr, 0, sizeof(srv_addr));        //地址结构清零
    bzero(&srv_addr, sizeof(srv_addr));
    
@@ -40,7 +41,10 @@ int main()
    srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     
    lfd = socket(AF_INET, SOCK_STREAM, 0);
-   
+ 
+   int opt = 1;
+   setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, (void*)&opt, sizeof(opt));      //设置端口复用
+  
    bind(lfd, (struct sockaddr *)&srv_addr, sizeof(srv_addr));
 
    listen(lfd, 128);
@@ -64,7 +68,6 @@ int main()
      }
      else
      {
-        struct sigaction act;
         act.sa_handler = catch_child;
         sigemptyset(&act.sa_mask);
         act.sa_flags = 0;
