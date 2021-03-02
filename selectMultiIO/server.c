@@ -31,45 +31,45 @@ int main()
   
   listen(listenfd, 128);
   
-  fd_set rset, allset;
-  int ret, maxfd = 0, n, i, j;
-  maxfd = listenfd;  
+  fd_set rset, allset;                                                            //定义读集合和备份集合
+  int ret, maxfd = 0, n, i, j;               
+  maxfd = listenfd;                                                               //最大文件描述符
 
-  FD_ZERO(&allset);
-  FD_SET(listenfd, &allset);
+  FD_ZERO(&allset);                                                               //清空监听集合
+  FD_SET(listenfd, &allset);                                                      //将待监听fd添加到监听集合中
   
   while(1)
   {
    rset = allset;
-   ret = select(maxfd + 1, &rset, NULL, NULL, NULL);
+   ret = select(maxfd + 1, &rset, NULL, NULL, NULL);                              //使用select 监听
    if(ret < 0)
      {
        perror("select error");
        exit(1);
      }
    
-   if(FD_ISSET(listenfd, &rset))
-     {
+   if(FD_ISSET(listenfd, &rset))                                                 //listenfd 满足监听的 读事件
+     { 
        clie_addr_len = sizeof(clie_addr);
-       connfd = accept(listenfd, (struct sockaddr *)&clie_addr, &clie_addr_len);
+       connfd = accept(listenfd, (struct sockaddr *)&clie_addr, &clie_addr_len); //建立链接，  不会阻塞
    
-       FD_SET(connfd, &allset);
+       FD_SET(connfd, &allset);                                                  //将新产生的fd, 添加到监听集合中，监听数据读事件
        
-       if(maxfd < connfd)
+       if(maxfd < connfd)                                                        //修改maxfd
           maxfd = connfd;
-       if(ret == 1)
+       if(ret == 1)                                                              //select只返回一个，并且是listenfd, 后续执行无须执行
           continue;  
      }
 
-   for(i = listenfd + 1; i <= maxfd; i++)
+   for(i = listenfd + 1; i <= maxfd; i++)                                        //处理满足读事件的那个fd
     {
        if(FD_ISSET(i, &rset))
         {
-          n = read(i, buf, sizeof(buf));
-          if(n == 0)
+          n = read(i, buf, sizeof(buf));                                           //读取数据
+          if(n == 0)                                                              //检测到客户端已经关闭链接
            {
              close(i);
-             FD_CLR(i, &allset);
+             FD_CLR(i, &allset);                                                 //移除监听套接字集合  
            }
           else if(n == -1)
            {
