@@ -21,12 +21,21 @@ int main()
   socklen_t clilen;
 
   struct sockaddr_in cliaddr, servaddr;
-  struct epoll_event tep, ep[OPEN_MAX];
+  struct epoll_event tep, ep[OPEN_MAX];                                   //tep:epoll_ctl参数  ep[]:epoll_wait参数
   
   listenfd = socket(AF_INET, SOCK_STREAM, 0);
+  int opt = 1;
+  setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt sizeof(opt));       //端口复用
+   bzero(&srv_addr, sizeof(srv_addr));
+   
+   srv_addr.sin_family = AF_INET;
+   srv_addr.sin_port = htons(SRV_PORT);
+   srv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   
+  bind(listenfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+  listen(listenfd,20);
 
-  efd = epoll_create(OPEN_MAX);
+  efd = epoll_create(OPEN_MAX);                                         //创建epoll模型，efd指向红黑树根节点
   if(efd == -1)
      {
         perror("epoll_create error");
